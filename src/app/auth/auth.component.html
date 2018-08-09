@@ -1,5 +1,6 @@
 <div class="login_panel">
-  <input [(ngModel)]="id"   type="text" placeholder="ユーザー名はここ!"/>
+  <input [(ngModel)]="userId"   type="text" placeholder="ユーザー名はここ!"/>
   <input [(ngModel)]= "password" type="password" placeholder="パスワードを入れてね!"/>
-  <button (click)="hoge()"> ログインします </button>
+  <button (click)="login($event)"> ログインします </button>
+
 </div>

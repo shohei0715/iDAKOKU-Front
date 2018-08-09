@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { HttpClient} from '@angular/common/http';
 
 @Component({
   selector: 'app-auth',
@@ -7,17 +8,51 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AuthComponent implements OnInit {
 
-  id = '';
+  userId = '';
   password = '';
+  list: Array<string>;
+  csrfToken = '';
+  djangoUrl = 'http://192.168.255.89:8000/accounts/login/';
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
   ngOnInit() {
+    this.http.get<string[]>(this.djangoUrl, { responseType:'html'}).subscribe(html => {
+      //console.log(html)
+      const parser=new DOMParser();//古い IE では実装されていないので注意
+      const django_doc = parser.parseFromString(html, "text/html");
+      this.csrfToken = django_doc.getElementsByName("csrfmiddlewaretoken")[0].value
+    }
+    );
+
   }
 
-  hoge(){
-    console.log(`hello world ${this.id} ${this.password}`)
+  login($event:MouseEvent){    
+    console.log(`hello world ${this.userId} ${this.password}`);
+
+    const options ={
+      params :{
+        'csrfmiddlewaretoken': this.csrfToken,
+        'username': this.userId,
+        'password': this.password,
+      },
+      headers:{ 'Content-Type':'application/json' }
+    }
+    this.http.post<string[]>(this.djangoUrl, options).subscribe(
+      list => 
+      {
+        this.list = list; 
+        console.log(list);
+      }
+      );
+    
+
+
+    
+    
+
   }
+
 
 
 }
